@@ -1,0 +1,21 @@
+{
+    
+    "database":{
+        "sistemas":{
+
+            "database_type":"mysql",
+            "database_name":"PROPUESTA",
+            "server":"localhost",
+            "username":"root",
+            "password":"Pit2019mtv#@",
+            "charset":"utf8"
+        }
+    },
+    "app":{
+
+        "name":"sugerencia-pit",
+        "url":"http://localhost/skeleton/public"
+
+    }
+
+}
