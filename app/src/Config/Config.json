@@ -5,9 +5,9 @@
 
             "database_type":"mysql",
             "database_name":"PROPUESTA",
-            "server":"localhost",
+            "server":"35.222.235.190",
             "username":"root",
-            "password":"Pit2019mtv#@",
+            "password":"qm43y4KgEnwe75bs",
             "charset":"utf8"
         }
     },
