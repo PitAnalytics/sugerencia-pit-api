@@ -41,7 +41,7 @@ class ProveedorController extends Controller{
     //tabla de prueba
     public function search($request,$response,$args){
 
-        $index = $this->modules['proveedor']->search();
+        $index = $this->modules['proveedor']->search($args['text']);
 
         $response1 = $response->withJson($index,201);
         $response2 = $response1

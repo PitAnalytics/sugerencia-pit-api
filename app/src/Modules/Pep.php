@@ -14,22 +14,105 @@ class Pep extends Connection implements TableInterface{
   public function get($id){
     return $this->database->get('Pep',['codigo','descripcion']);
   }
-  public function search($id){
+  public function search($id,$text=null){
 
-    $query= $this->database->query("")->fetchAll(2);
+    $query;
 
+    if($text!==null){
+
+      $query=$this->database->query(  
+      "SELECT * 
+
+      FROM 
+
+      (SELECT 
+      year2.codigoPep as codigoPep, 
+      year2.descripcionPep as descripcionPep, 
+      year1.subtotal as subtotal2018, 
+      year2.subtotal as subtotal2019 
+      FROM 
+      
+      (SELECT Pep.codigo AS codigoPep, 
+      Pep.descripcion AS descripcionPep, 
+      SUM(Orden.monto) AS subtotal 
+      FROM Orden 
+      INNER JOIN Pep 
+      ON Orden.codigoPep = Pep.codigo 
+      WHERE 
+      SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018' 
+      AND Orden.numeroProveedor = '$id' 
+      GROUP BY 
+      Pep.codigo) as year1 
+              
+      RIGHT JOIN 
+      
+      (SELECT Pep.codigo AS codigoPep, 
+      Pep.descripcion AS descripcionPep, 
+      SUM(Orden.monto) AS subtotal 
+      FROM Orden 
+      INNER JOIN Pep 
+      ON Orden.codigoPep = Pep.codigo 
+      WHERE 
+      SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
+      AND Orden.numeroProveedor = '$id' 
+      GROUP BY 
+      Pep.codigo) as year2 
+      ON year1.codigoPep=year2.codigoPep) as years 
+      WHERE descripcionPep LIKE '%$text%'"
+      )->fetchAll(2);
+
+    }
+    else{
+      $query= $this->database->query(
+        "SELECT 
+        year2.codigoPep as codigoPep,
+        year2.descripcionPep as descripcionPep,
+        year1.subtotal as subtotal2018,
+        year2.subtotal as subtotal2019
+        FROM 
+        
+        (SELECT Pep.codigo AS codigoPep, 
+        Pep.descripcion AS descripcionPep,
+        SUM(Orden.monto) AS subtotal
+        FROM Orden
+        INNER JOIN Pep
+        ON Orden.codigoPep = Pep.codigo
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018' 
+        AND Orden.numeroProveedor = '$id' 
+        GROUP BY 
+        Pep.codigo) as year1
+                
+        RIGHT JOIN
+        
+        (SELECT Pep.codigo AS codigoPep, 
+        Pep.descripcion AS descripcionPep,
+        SUM(Orden.monto) AS subtotal
+        FROM Orden
+        INNER JOIN Pep
+        ON Orden.codigoPep = Pep.codigo
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
+        AND Orden.numeroProveedor = '$id' 
+        GROUP BY 
+        Pep.codigo) as year2
+        ON year1.codigoPep=year2.codigoPep;"
+      )->fetchAll(2);
+    }
     $result=[];
 
     foreach ($query as $row) {
 
-        $line=[];
-        $line['numeroProveedor']=$row['numeroProveedor'];
-        $line['nombreProveedor']=$row['nombreProveedor'];
-        $line['subtotal']=floatval($row['subtotal']);
-        $line['conteoPep']=intval($row['conteoPep']);
-        unset($row);
-        $result[]=$line;
+      $line=[];
+      $line['codigoPep']=$row['codigoPep'];
+      $line['descripcionPep']=$row['descripcionPep'];
+      $line['subtotal2018']=floatval($row['subtotal2018']);
+      $line['subtotal2019']=intval($row['subtotal2019']);
+      unset($row);
+      $result[]=$line;
+
     }
+
     return $result;  
   }
 }

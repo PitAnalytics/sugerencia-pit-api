@@ -16,17 +16,25 @@ class PepController extends Controller{
         $this->modules['pep']=$this->container['pep']($this->databases['sistemas']);
 
     }
-
     public function index($request,$response,$args){
 
         $index = $this->modules['pep']->index();
-
-        //imprimimos como json la tabla de prueba
         $response1 = $response->withJson($index,201);
         $response2 = $response1
         ->withHeader('Access-Control-Allow-Origin', '*')
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
 
+        return $response2;
+        
+    }
+    //tabla de prueba
+    public function search($request,$response,$args){
+
+        $index = $this->modules['pep']->search($args['id'],$args['text']);
+        $response1 = $response->withJson($index,201);
+        $response2 = $response1
+        ->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
         return $response2;
         
     }

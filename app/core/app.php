@@ -33,8 +33,9 @@ $app->get('/proveedor', \App\Controllers\ProveedorController::class.':index');
 $app->get('/pep', \App\Controllers\PepController::class.':index');
 $app->get('/pedido', \App\Controllers\PedidoController::class.':index');
 //
-$app->get('/proveedor/search', \App\Controllers\ProveedorController::class.':search');
-$app->get('/pep/search', \App\Controllers\ProveedorController::class.':search');
+$app->get('/proveedor/search[/{text}]', \App\Controllers\ProveedorController::class.':search');
+$app->get('/pep/search/{id}[/{text}]', \App\Controllers\PepController::class.':search');
+$app->get('/pedido/search/{id}[/{text}]', \App\Controllers\PedidoController::class.':search');
 //
 
 //

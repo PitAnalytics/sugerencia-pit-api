@@ -31,15 +31,15 @@ class PedidoController extends Controller{
   }
 
     //tabla de prueba
-    public function search($request,$response,$args){
+  public function search($request,$response,$args){
 
-      $index = $this->modules['pedido']->index();
-      //imprimimos como json la tabla de prueba
-      $response1 = $response->withJson($index,201);
-      $response2 = $response1
-      ->withHeader('Access-Control-Allow-Origin', '*')
-      ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-      return $response2;
+    $index = $this->modules['pedido']->search($args['id']);
+    //imprimimos como json la tabla de prueba
+    $response1 = $response->withJson($index,201);
+    $response2 = $response1
+    ->withHeader('Access-Control-Allow-Origin', '*')
+    ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    return $response2;
       
   }
 
