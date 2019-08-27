@@ -15,10 +15,19 @@ class Pedido extends Connection implements TableInterface{
     return $this->database->get('Pedido',['numero','concepto','numeroProveedor','codigoPep']);
   }
 
-  public function search($id,$text=''){
+  public function search($id,$text=null){
 
-    $query= $this->database->query(
-      "SELECT year2.numeroPedido AS numeroPedido,
+    $query;
+
+
+    if($text!==null){
+
+      $query= $this->database->query(
+      "SELECT *
+
+      FROM
+      (SELECT 
+	    year2.numeroPedido AS numeroPedido,
       year2.conceptoPedido AS conceptoPedido,
       year1.subtotal AS subtotal2018,
       year2.subtotal AS subtotal2019
@@ -53,8 +62,55 @@ class Pedido extends Connection implements TableInterface{
       GROUP BY 
       Pedido.numero) as year2 
       
-      ON year1.numeroPedido= year2.numeroPedido"
-    )->fetchAll(2);
+      ON year1.numeroPedido= year2.numeroPedido) as years
+      
+      WHERE conceptoPedido LIKE '%$text%'"
+
+      )->fetchAll(2);
+
+    }
+    else{
+
+      $query= $this->database->query(
+        "SELECT year2.numeroPedido AS numeroPedido,
+        year2.conceptoPedido AS conceptoPedido,
+        year1.subtotal AS subtotal2018,
+        year2.subtotal AS subtotal2019
+        
+        FROM 
+        
+        (SELECT 
+        Pedido.numero AS numeroPedido,  
+        Pedido.concepto AS conceptoPedido, 
+        SUM(Orden.monto) AS subtotal 
+        FROM Orden 
+        INNER JOIN Pedido 
+        ON Orden.numeroPedido = Pedido.numero 
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018' 
+        AND Orden.codigoPep='$id' 
+        GROUP BY 
+        Pedido.numero) as year1
+        
+        RIGHT JOIN 
+        
+        (SELECT 
+        Pedido.numero AS numeroPedido, 
+        Pedido.concepto AS conceptoPedido, 
+        SUM(Orden.monto) AS subtotal 
+        FROM Orden 
+        INNER JOIN Pedido 
+        ON Orden.numeroPedido = Pedido.numero 
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
+        AND Orden.codigoPep='$id' 
+        GROUP BY 
+        Pedido.numero) as year2 
+        
+        ON year1.numeroPedido= year2.numeroPedido"
+      )->fetchAll(2);
+
+    }
 
     $result=[];
 
