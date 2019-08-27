@@ -14,85 +14,140 @@ class Proveedor extends Connection implements TableInterface{
     public function get($id){
        return $this->database->get('Proveedor',['numero','nombre']);
     }
-    public function search($text=null){
+    public function search($text){
 
         $query;
 
-        if($text!==null){
-            $query= $this->database->query(
-                "SELECT *
-        
-                    FROM 
-        
-                (SELECT year2.numeroProveedor AS numeroProveedor, year2.nombreProveedor AS nombreProveedor, year1.subtotal AS subtotal2018, year2.subtotal AS subtotal2019 
-        
-                FROM 
-                (SELECT Proveedor.numero AS numeroProveedor, 
-                Proveedor.nombre AS nombreProveedor,
-                SUM(Orden.monto) AS subtotal
-                FROM Orden
-                INNER JOIN Proveedor
-                ON Orden.numeroProveedor = Proveedor.numero
-                WHERE
-                SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018'
-                GROUP BY 
-                Proveedor.numero) as year1 
-                
-                RIGHT JOIN 
-                
-                (SELECT Proveedor.numero AS numeroProveedor, 
-                Proveedor.nombre AS nombreProveedor, 
-                SUM(Orden.monto) AS subtotal 
-                FROM Orden 
-                INNER JOIN Proveedor 
-                ON Orden.numeroProveedor = Proveedor.numero 
-                WHERE 
-                SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
-                GROUP BY 
-                Proveedor.numero) as year2 
-                
-                ON year1.numeroProveedor = year2.numeroProveedor) AS years 
-                
-                WHERE nombreProveedor LIKE '%$text%'"
+        if($text!=null){
+        $query= $this->database->query(
+        "SELECT 
+        * 
+        FROM
 
-            )->fetchAll(2);
+        (SELECT year2.numeroProveedor AS numeroProveedor, 
+        year2.nombreProveedor AS nombreProveedor, 
+        year1.subtotal AS subtotal2018, 
+        year2.subtotal AS subtotal2019 
+                
+        FROM 
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor,
+        SUM(Orden.monto) AS subtotal
+        FROM Orden
+        INNER JOIN Proveedor
+        ON Orden.numeroProveedor = Proveedor.numero
+        WHERE
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018'
+        GROUP BY 
+        Proveedor.numero) as year1 
+        LEFT JOIN 
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor, 
+        SUM(Orden.monto) AS subtotal 
+        FROM Orden 
+        INNER JOIN Proveedor 
+        ON Orden.numeroProveedor = Proveedor.numero 
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
+        GROUP BY 
+        Proveedor.numero) as year2 
+        ON year1.numeroProveedor = year2.numeroProveedor
+
+        UNION
+                
+        SELECT year2.numeroProveedor AS numeroProveedor, year2.nombreProveedor AS nombreProveedor, year1.subtotal AS subtotal2018, year2.subtotal AS subtotal2019 
+                
+        FROM 
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor,
+        SUM(Orden.monto) AS subtotal
+        FROM Orden
+        INNER JOIN Proveedor
+        ON Orden.numeroProveedor = Proveedor.numero
+        WHERE
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018'
+        GROUP BY 
+        Proveedor.numero) as year1 
+
+        RIGHT JOIN
+
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor, 
+        SUM(Orden.monto) AS subtotal 
+        FROM Orden 
+        INNER JOIN Proveedor 
+        ON Orden.numeroProveedor = Proveedor.numero 
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
+        GROUP BY 
+        Proveedor.numero) as year2 
+        ON year1.numeroProveedor = year2.numeroProveedor) AS years
+        WHERE nombreProveedor LIKE '%".$text."%' 
+        ORDER BY numeroProveedor")->fetchAll(2);
         }
         else{
-            $query= $this->database->query(
 
-                "SELECT year2.numeroProveedor AS numeroProveedor, 
-                year2.nombreProveedor AS nombreProveedor, 
-                year1.subtotal AS subtotal2018, 
-                year2.subtotal AS subtotal2019 
-        
-                FROM 
-                (SELECT Proveedor.numero AS numeroProveedor, 
-                Proveedor.nombre AS nombreProveedor, 
-                SUM(Orden.monto) AS subtotal 
-                FROM Orden 
-                INNER JOIN Proveedor 
-                ON Orden.numeroProveedor = Proveedor.numero 
-                WHERE 
-                SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018' 
-                GROUP BY 
-                Proveedor.numero) as year1 
-                
-                RIGHT JOIN 
-                
-                (SELECT Proveedor.numero AS numeroProveedor, 
-                Proveedor.nombre AS nombreProveedor, 
-                SUM(Orden.monto) AS subtotal 
-                FROM Orden 
-                INNER JOIN Proveedor 
-                ON Orden.numeroProveedor = Proveedor.numero 
-                WHERE 
-                SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
-                GROUP BY 
-                Proveedor.numero) as year2 
-                
-                ON year1.numeroProveedor = year2.numeroProveedor"
-                
-            )->fetchAll(2);
+        $query= $this->database->query(
+        "SELECT 
+        * 
+        FROM
+        (SELECT year2.numeroProveedor AS numeroProveedor, 
+        year2.nombreProveedor AS nombreProveedor, 
+        year1.subtotal AS subtotal2018, 
+        year2.subtotal AS subtotal2019 
+        FROM 
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor,
+        SUM(Orden.monto) AS subtotal
+        FROM Orden
+        INNER JOIN Proveedor
+        ON Orden.numeroProveedor = Proveedor.numero
+        WHERE
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018'
+        GROUP BY 
+        Proveedor.numero) as year1 
+        LEFT JOIN 
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor, 
+        SUM(Orden.monto) AS subtotal 
+        FROM Orden 
+        INNER JOIN Proveedor 
+        ON Orden.numeroProveedor = Proveedor.numero 
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
+        GROUP BY 
+        Proveedor.numero) as year2 
+        ON year1.numeroProveedor = year2.numeroProveedor
+        UNION
+        SELECT year2.numeroProveedor AS numeroProveedor, 
+        year2.nombreProveedor AS nombreProveedor, 
+        year1.subtotal AS subtotal2018, 
+        year2.subtotal AS subtotal2019 
+        FROM 
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor,
+        SUM(Orden.monto) AS subtotal
+        FROM Orden
+        INNER JOIN Proveedor
+        ON Orden.numeroProveedor = Proveedor.numero
+        WHERE
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2018'
+        GROUP BY 
+        Proveedor.numero) as year1 
+        RIGHT JOIN
+        (SELECT Proveedor.numero AS numeroProveedor, 
+        Proveedor.nombre AS nombreProveedor, 
+        SUM(Orden.monto) AS subtotal 
+        FROM Orden 
+        INNER JOIN Proveedor 
+        ON Orden.numeroProveedor = Proveedor.numero 
+        WHERE 
+        SUBSTR(CAST(Orden.fecha AS CHAR(10)),1,4) = '2019' 
+        GROUP BY 
+        Proveedor.numero) as year2 
+        ON year1.numeroProveedor = year2.numeroProveedor) AS years 
+        WHERE 1
+        ORDER BY numeroProveedor")->fetchAll(2);
         }
 
         $result=[];

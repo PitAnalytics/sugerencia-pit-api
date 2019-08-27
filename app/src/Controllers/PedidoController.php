@@ -33,7 +33,7 @@ class PedidoController extends Controller{
     //tabla de prueba
   public function search($request,$response,$args){
 
-    $index = $this->modules['pedido']->search($args['id'],$args['text']);
+    $index = $this->modules['pedido']->search($args['id'],$args['idbis'],$args['text']);
     //imprimimos como json la tabla de prueba
     $response1 = $response->withJson($index,201);
     $response2 = $response1
